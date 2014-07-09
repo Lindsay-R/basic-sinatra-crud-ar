@@ -14,3 +14,12 @@ feature "Register page" do
     expect(page).to have_content("password")
   end
 end
+feature "Fill in form and see greeting" do
+  scenario "visit registration page" do
+    visit "/registration"
+    fill_in 'username', with: 'Lindsay'
+    fill_in 'password', with: 'Ilovekittens'
+    click_button "Submit"
+    expect(page).to have_content("Thank you for registering")
+    end
+end
