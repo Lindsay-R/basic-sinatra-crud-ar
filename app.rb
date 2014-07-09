@@ -9,6 +9,11 @@ class App < Sinatra::Application
   end
 
   get "/" do
-    "Hello"
+  erb :root
   end
+
+  get "/registration" do
+    erb :registration
+  end
+
 end
