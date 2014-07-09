@@ -5,8 +5,12 @@
 <h1>blah blah</h1>
 
 <!--if not logged in-->
-<% if :id != nil%>
-  <a href="/"><button action="/logout" type="button" formmethod="post">Logout</button></a>
+<% if session[:user_id]  %>
+  <!--<a href="/logout"><button action="/logout" type="button" formmethod="post">Logout</button></a>-->
+  <form action="/logout" method="post"><button type="logout">Logout</button></form>
+
+  <%= @test %>
+
 <% else %>
   <a href="/registration"><button type="button" formmethod="post">Registration</button></a>
 
@@ -15,6 +19,8 @@
     password <input type="password" name="password">
     <button type="submit">Login</button>
   </form>
+
+
 
  <% end %>
 

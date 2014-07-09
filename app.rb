@@ -13,10 +13,11 @@ class App < Sinatra::Application
   end
 
   get "/" do
+    @test = "hello world"
     if session[:user_id]
       puts "We still have a session id #{session[:id]}"
     end
-    erb :root, :locals => {:id => session[:user_id]}, :layout => :layout
+    erb :root
   end
 
   get "/registration" do
@@ -54,5 +55,7 @@ class App < Sinatra::Application
 
   post "/logout" do
     session[:user_id] = nil
+    p session[:user_id]
+    redirect "/"
   end
 end #end of class
