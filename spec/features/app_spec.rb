@@ -4,6 +4,9 @@ feature "Homepage" do
   scenario "check homepage" do
     visit "/"
     expect(page).to have_button("Registration")
+    expect(page).to have_content("username")
+    expect(page).to have_content("password")
+    expect(page).to have_button("Login")
   end
 end
 feature "Register page" do
@@ -22,4 +25,15 @@ feature "Fill in form and see greeting" do
     click_button "Submit"
     expect(page).to have_content("Thank you for registering")
     end
+end
+feature "Login" do
+  scenario "have logged out" do
+    visit "/"
+    fill_in 'username', with: 'Alex'
+    fill_in 'password', with: 'Ilovepuppies'
+    click_button "Login"
+    expect(page).to have_button("Logout")
+    expect(page).to have_no_button("Login")
+    expect(page).to have_no_button("Registration")
+   end
 end

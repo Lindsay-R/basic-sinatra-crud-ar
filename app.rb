@@ -23,4 +23,9 @@ class App < Sinatra::Application
     flash[:notice] = "Thank you for registering"
     redirect "/"
   end
+
+  post "/login" do
+    flash[:not_logged_in] = true
+    redirect "/"
+  end
 end #end of class

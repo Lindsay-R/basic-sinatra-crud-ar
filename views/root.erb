@@ -2,4 +2,23 @@
   <link rel="stylesheet" type="text/css" href="homepage.css">
 </head>
 
-<a href="/registration"><button type="button" formmethod="post">Registration</button></a>
+<h1>blah blah</h1>
+
+<!--if not logged in-->
+<% if flash[:not_logged_in] == true%>
+  <a href="/"><button type="button" formmethod="post">Logout</button></a>
+
+
+<% else %>
+  <a href="/registration"><button type="button" formmethod="post">Registration</button></a>
+
+  <form action="/login" method="post">
+    username <input type="text" name="username">
+    password <input type="password" name="password">
+    <button type="submit">Login</button>
+  </form>
+
+ <% end %>
+
+
+
