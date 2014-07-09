@@ -6,13 +6,17 @@ require "./lib/database_connection"
 class App < Sinatra::Application
   enable :sessions
   use Rack::Flash
+
   def initialize
     super
     @database_connection = DatabaseConnection.new(ENV["RACK_ENV"])
   end
 
   get "/" do
-  erb :root
+    if session[:user_id]
+      puts "We still have a session id #{session[:id]}"
+    end
+    erb :root, :locals => {:id => session[:user_id]}, :layout => :layout
   end
 
   get "/registration" do
@@ -20,12 +24,35 @@ class App < Sinatra::Application
   end
 
   post "/registration" do
-    flash[:notice] = "Thank you for registering"
+    if params[:username] == '' && params[:password] == ''
+      flash[:notice] = "Please fill in username and password"
+      redirect "/registration"
+    elsif params[:password] == ''
+      flash[:notice] = "Please fill in password"
+      redirect "/registration"
+    elsif params[:username] == ''
+      flash[:notice] = "Please fill in username"
+      redirect "/registration"
+    else
+      flash[:notice] = "Thank you for registering"
+      @database_connection.sql("INSERT INTO users (username, password) VALUES ('#{params[:username]}', '#{params[:password]}')")
+      redirect "/"
+    end
+  end
+
+
+
+  post "/login" do
+    current_user = @database_connection.sql("SELECT * FROM users WHERE username='#{params[:username]}' AND password='#{params[:password]}';").first
+    puts "user is #{current_user}"
+    session[:user_id] = current_user["id"]
+    p "the session id is #{session[:user_id]}"
+    flash[:not_logged_in] = true
+    flash[:notice] = "Welcome, #{params[:username]}"
     redirect "/"
   end
 
-  post "/login" do
-    flash[:not_logged_in] = true
-    redirect "/"
+  post "/logout" do
+    session[:user_id] = nil
   end
 end #end of class
