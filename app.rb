@@ -13,9 +13,6 @@ class App < Sinatra::Application
   end
 
   get "/" do
-
-    p "......."
-    p session[:user_id]
     if session[:user_id]
       puts "We still have a session id #{session[:id]}"
     end
@@ -47,11 +44,30 @@ class App < Sinatra::Application
     end
   end
 
+  post "/sort" do
+    if order == asc
+      p "==-=-=-=-"
+      suffix = "ORDER BY username ASC"
+    elsif order == desc
+      p ">>>"
+      suffix = "ORDER BY username DESC"
+    end
+    redirect "/"
+  end
+
+  post "/sort?order=asc" do
+    p ".,.,..,.,.>>><><"
+  end
+
+
+
+
+
 
 
   post "/login" do
     current_user = @database_connection.sql("SELECT * FROM users WHERE username='#{params[:username]}' AND password='#{params[:password]}';").first
-    puts "user is #{current_user}"
+    puts "user is #{current_user["username"]}"
     session[:user_id] = current_user["id"]
     # p "the session id is #{session[:user_id]}"
     flash[:not_logged_in] = true
@@ -61,8 +77,6 @@ class App < Sinatra::Application
 
   post "/logout" do
     session[:user_id] = nil
-    p "=========="
-    p session[:user_id]
     redirect "/"
   end
 end #end of class

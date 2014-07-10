@@ -3,10 +3,31 @@
 </head>
 
 <!--if not logged in-->
-<% if session[:user_id]  %>
+<% if session[:user_id] %>
   <!--<a href="/logout"><button action="/logout" type="button" formmethod="post">Logout</button></a>-->
-  <form action="/logout" method="post"><button type="submit">Logout</button></form>
+  <form action="/logout" method="post">
+    <button type="submit">Logout</button>
+  </form>
+  <h2>Current Users</h2>
+  <h4>sort</h4>
+  <form action="/sort">
+    <input type="radio" name="order" value="asc">Ascending<br>
+    <input type="radio" name="order" value="desc">Descending<br>
+    <button type="submit">Submit</button>
+  </form>
 
+
+  <ul>
+    <% @database_connection.sql("SELECT username,id FROM users").each do |user| %>
+      <% if user["id"] != session[:user_id] %>
+        <li><%= user["username"] %></li>
+      <% end %>
+    <% end %>
+  </ul>
+
+
+
+  <!--<form action="/login" method="post"><button type="submit">Sort</button></form>-->
 <% else %>
   <a href="/registration">Registration</a>
 
@@ -18,7 +39,7 @@
 
 
 
- <% end %>
+<% end %>
 
 
 
