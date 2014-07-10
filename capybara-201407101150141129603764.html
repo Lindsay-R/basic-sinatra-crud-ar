@@ -1,13 +1,18 @@
-<head>
+<h1>A and L's APP</h1>
+<div class="wrapper">
+  <article class="one_fourth"></article>
+  <article class="one_half" id="flash_box">
+    
+      <p style="color: green">Welcome, Alex
+    
+  </article>
+  <article class="one_forth"></article>
+</div>
+  <head>
   <link rel="stylesheet" type="text/css" href="homepage.css">
 </head>
 
 <!--if not logged in-->
-<% if session[:user_id]  %>
-  <!--<a href="/logout"><button action="/logout" type="button" formmethod="post">Logout</button></a>-->
-  <form action="/logout" method="post"><button type="submit">Logout</button></form>
-
-<% else %>
   <a href="/registration">Registration</a>
 
   <form action="/login" method="post">
@@ -18,7 +23,9 @@
 
 
 
- <% end %>
+ 
 
 
 
+
+<h2>END</h2>

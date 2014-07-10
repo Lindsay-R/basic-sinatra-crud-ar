@@ -13,7 +13,9 @@ class App < Sinatra::Application
   end
 
   get "/" do
-    @test = "hello world"
+
+    p "......."
+    p session[:user_id]
     if session[:user_id]
       puts "We still have a session id #{session[:id]}"
     end
@@ -35,6 +37,10 @@ class App < Sinatra::Application
       flash[:notice] = "Please fill in username"
       redirect "/registration"
     else
+      if @database_connection.sql("SELECT id FROM users WHERE username = '#{params[:username]}'") != []
+        flash[:notice] = "Username is already in use, please choose another."
+        redirect "/registration"
+      end
       flash[:notice] = "Thank you for registering"
       @database_connection.sql("INSERT INTO users (username, password) VALUES ('#{params[:username]}', '#{params[:password]}')")
       redirect "/"
@@ -47,7 +53,7 @@ class App < Sinatra::Application
     current_user = @database_connection.sql("SELECT * FROM users WHERE username='#{params[:username]}' AND password='#{params[:password]}';").first
     puts "user is #{current_user}"
     session[:user_id] = current_user["id"]
-    p "the session id is #{session[:user_id]}"
+    # p "the session id is #{session[:user_id]}"
     flash[:not_logged_in] = true
     flash[:notice] = "Welcome, #{params[:username]}"
     redirect "/"
@@ -55,6 +61,7 @@ class App < Sinatra::Application
 
   post "/logout" do
     session[:user_id] = nil
+    p "=========="
     p session[:user_id]
     redirect "/"
   end
