@@ -1,7 +1,7 @@
 require "sinatra"
 require "active_record"
 require "rack-flash"
-require "./lib/database_connection"
+require "gschool_database_connection"
 
 class App < Sinatra::Application
   enable :sessions
@@ -9,13 +9,20 @@ class App < Sinatra::Application
 
   def initialize
     super
-    @database_connection = DatabaseConnection.establish(ENV["RACK_ENV"])
+    @database_connection = GschoolDatabaseConnection::DatabaseConnection.establish(ENV["RACK_ENV"])
+
   end
 
   get "/" do
     if session[:user_id]
       puts "We still have a session id #{session[:id]}"
     end
+    if params[:order_names] == "asc"
+      @suffix = " ORDER BY username ASC"
+    elsif params[:order_names] == "desc"
+      @suffix = " ORDER BY username DESC"
+    end
+    @other_users = "SELECT username,id FROM users"
     erb :root
   end
 
@@ -44,26 +51,22 @@ class App < Sinatra::Application
     end
   end
 
-  post "/sort" do
-    if order == asc
-      p "==-=-=-=-"
-      suffix = "ORDER BY username ASC"
-    elsif order == desc
-      p ">>>"
-      suffix = "ORDER BY username DESC"
-    end
-    redirect "/"
+  post "/delete" do
+    name_to_delete = params[:name]
+    @database_connection.sql("Delete from users where username = '#{name_to_delete}'")
+    redirect back
   end
 
-  post "/sort?order=asc" do
-    p ".,.,..,.,.>>><><"
+  post "/fish" do
+    name = params[:name]
+    wiki = params[:wiki]
+    @database_connection.sql("INSERT INTO fish (fish_name, fish_wiki, user_id) VALUES ('#{name}', '#{wiki}', #{session[:user_id]})")
+    redirect back
   end
 
+  get "/friends_fish" do
 
-
-
-
-
+  end
 
   post "/login" do
     current_user = @database_connection.sql("SELECT * FROM users WHERE username='#{params[:username]}' AND password='#{params[:password]}';").first

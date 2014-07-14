@@ -35,7 +35,7 @@ namespace :db do
 
   desc "Migrate the database for the current environment"
   task :migrate do
-    DatabaseConnection.establish(env)
+    GschoolDatabaseConnection::DatabaseConnection.establish(env)
     ActiveRecord::Migrator.migrate(db_dir)
   end
 
