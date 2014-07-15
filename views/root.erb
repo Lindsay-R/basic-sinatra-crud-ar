@@ -1,15 +1,13 @@
-<head>
-  <link rel="stylesheet" type="text/css" href="homepage.css">
-</head>
+
 
 <!--if not logged in-->
 <% if session[:user_id] %>
   <!--<a href="/logout"><button action="/logout" type="button" formmethod="post">Logout</button></a>-->
-  <form action="/logout" method="post">
-    <button type="submit">Logout</button>
-  </form>
-  <h2>Current Users</h2>
-  <h4>sort</h4>
+  <% user_array = @database_connection.sql("SELECT username FROM users WHERE id = #{session[:user_id]}") %>
+  <% user = user_array.pop["username"] %>
+
+  <h1 class="greeting">Welcome, <%= user %></h1>
+  <h2 class="center_text">Users</h2>
 
   <form action="/" method="get">
     <input type="radio" name="order_names" value="asc">Ascending<br>
@@ -21,58 +19,80 @@
 
 
   <% if @suffix != nil %>
-  <ul>
-    <% p "Hello"%>
+
+  <table>
+    <tr>
+      <th>Username</th>
+      <th>Actions</th>
+    </tr>
     <% @database_connection.sql(@other_users + @suffix).each do |user| %>
       <% if user["id"] != session[:user_id] %>
-        <li><a href="<%= user["id"] %>"><%= user["username"] %></a></li>
-
+        <tr>
+          <td><a href="<%= user["id"] %>"> <%= user["username"] %></a></td>
+          <td><a href="/delete_user/<%= user["id"]%>"> Delete</a></td>
+        </tr>
       <% end %>
     <% end %>
-  </ul>
+  </table>
+
   <% else %>
-    <ul>
+
+    <table>
+        <tr>
+          <th>Username</th>
+          <th>Actions</th>
+        </tr>
       <% @database_connection.sql(@other_users).each do |user| %>
         <% if user["id"] != session[:user_id] %>
-          <li><a href="<%= user["id"] %>"><%= user["username"] %></a></li>
+          <tr>
+            <td><a href="<%= user["id"] %>"><%= user["username"] %></a></td>
+            <td><a href="/delete_user/<%= user["id"]%>"> Delete</a></td>
+          </tr>
         <% end %>
       <% end %>
-    </ul>
+    </table>
+
   <% end %>
 
-  <br>
-  <form action="/delete" method="post">
-    <input name="name" value="Enter user to delete">
-    <button type="submit">Submit</button>
-  </form>
 
-
-  <dl>
+  <h2 class="center_text">My Fish</h2>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
     <% @database_connection.sql("select * from fish").each do |fish| %>
       <% if fish["user_id"] == session[:user_id] %>
-    <dt><%= fish['fish_name'] %></dt>
-      <dd><a href="<%= fish['fish_wiki'] %>"><%= fish['fish_wiki'] %></a></dd>
-    <% end %>
+    <tr>
+      <td><%= fish['fish_name'] %></td>
+      <td><a href="<%= fish['fish_wiki'] %>">Wikipedia</a></td>
+    </tr>
       <% end %>
-  </dl>
+      <% end %>
+  </table>
 
   <br>
-  <form action="/fish" method="post">
-    <input name="name" value="Enter fish name">
-    <input name="wiki" value="Enter fish's wiki page'">
-    <button type="submit">Submit</button>
+  <form action="/fish" method="get">
+    <button id="fish_button">Create Fish</button>
   </form>
 
-
+  <form action="/logout" method="post">
+    <button id ="log_button" type="submit">Logout</button>
+  </form>
 
   <!--<form action="/login" method="post"><button type="submit">Sort</button></form>-->
 <% else %>
-  <a href="/registration">Registration</a>
+  <form method="get" action="/registration">
+    <button id="register">Register</button>
+  </form>
+  <h2 class=" center_text">OR</h2>
+
 
   <form action="/login" method="post">
-    username <input type="text" name="username">
-    password <input type="password" name="password">
-    <button type="submit">Login</button>
+    username <input class="input_field" type="text" name="username">
+    <br>
+    password <input class="input_field" type="password" name="password">
+    <button id ="log_button"  type="submit">Login</button>
   </form>
 
 

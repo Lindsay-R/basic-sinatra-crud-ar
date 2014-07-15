@@ -51,17 +51,16 @@ class App < Sinatra::Application
     end
   end
 
-  post "/delete" do
-    name_to_delete = params[:name]
-    @database_connection.sql("Delete from users where username = '#{name_to_delete}'")
-    redirect back
-  end
-
   post "/fish" do
     name = params[:name]
     wiki = params[:wiki]
-    @database_connection.sql("INSERT INTO fish (fish_name, fish_wiki, user_id) VALUES ('#{name}', '#{wiki}', #{session[:user_id]})")
-    redirect back
+    if name == ""
+      flash[:notice] = "Fish must have a name!"
+      redirect back
+    else
+      @database_connection.sql("INSERT INTO fish (fish_name, fish_wiki, user_id) VALUES ('#{name}', '#{wiki}', #{session[:user_id]})")
+      redirect '/'
+    end
   end
 
   get "/friends_fish" do
@@ -74,7 +73,6 @@ class App < Sinatra::Application
     session[:user_id] = current_user["id"]
     # p "the session id is #{session[:user_id]}"
     flash[:not_logged_in] = true
-    flash[:notice] = "Welcome, #{params[:username]}"
     redirect "/"
   end
 
@@ -82,4 +80,15 @@ class App < Sinatra::Application
     session[:user_id] = nil
     redirect "/"
   end
+
+  get '/fish' do
+    erb :fish
+  end
+
+  get '/delete_user/:index' do
+    id = params[:index].to_i
+    @database_connection.sql("DELETE FROM users where id = #{id}")
+    redirect back
+  end
+
 end #end of class
