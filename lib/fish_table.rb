@@ -32,14 +32,6 @@ def find_by(fish_name)
   @database_connection.sql(find_by_sql).first
 end
 
-# def find_id_by_name(username)
-#   find_sql = <<-SQL
-#       SELECT id FROM users
-#       WHERE username = #{username}
-#   SQL
-#
-#   @database_connection.sql(find_sql).first
-# end
 
 def delete(id)
   @database_connection.sql("DELETE FROM fish where id = #{id}")

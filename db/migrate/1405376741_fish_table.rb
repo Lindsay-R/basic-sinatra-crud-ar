@@ -1,4 +1,4 @@
-class FishTable < ActiveRecord::Migration
+class CreateFish < ActiveRecord::Migration
   def up
     create_table :fish do |t|
       t.string :fish_name
