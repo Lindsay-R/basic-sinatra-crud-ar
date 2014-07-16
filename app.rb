@@ -2,6 +2,8 @@ require "sinatra"
 require "active_record"
 require "rack-flash"
 require "gschool_database_connection"
+require_relative "lib/users_table"
+require_relative "lib/fish_table"
 
 class App < Sinatra::Application
   enable :sessions
@@ -9,20 +11,18 @@ class App < Sinatra::Application
 
   def initialize
     super
-    @database_connection = GschoolDatabaseConnection::DatabaseConnection.establish(ENV["RACK_ENV"])
-
+    @users_table = UsersTable.new(
+      GschoolDatabaseConnection::DatabaseConnection.establish(ENV["RACK_ENV"])
+    )
+    @fish_table = FishTable.new(
+      GschoolDatabaseConnection::DatabaseConnection.establish(ENV["RACK_ENV"])
+    )
   end
 
   get "/" do
     if session[:user_id]
       puts "We still have a session id #{session[:id]}"
     end
-    if params[:order_names] == "asc"
-      @suffix = " ORDER BY username ASC"
-    elsif params[:order_names] == "desc"
-      @suffix = " ORDER BY username DESC"
-    end
-    @other_users = "SELECT username,id FROM users"
     erb :root
   end
 
@@ -41,12 +41,12 @@ class App < Sinatra::Application
       flash[:notice] = "Please fill in username"
       redirect "/registration"
     else
-      if @database_connection.sql("SELECT id FROM users WHERE username = '#{params[:username]}'") != []
+      if @users_table.find_id_by_name(params[:username]) != nil
         flash[:notice] = "Username is already in use, please choose another."
         redirect "/registration"
       end
       flash[:notice] = "Thank you for registering"
-      @database_connection.sql("INSERT INTO users (username, password) VALUES ('#{params[:username]}', '#{params[:password]}')")
+      @users_table.create(params[:username], params[:password])
       redirect "/"
     end
   end
@@ -58,7 +58,7 @@ class App < Sinatra::Application
       flash[:notice] = "Fish must have a name!"
       redirect back
     else
-      @database_connection.sql("INSERT INTO fish (fish_name, fish_wiki, user_id) VALUES ('#{name}', '#{wiki}', #{session[:user_id]})")
+      @fish_table.create(name, wiki, session[:user_id])
       redirect '/'
     end
   end
@@ -68,11 +68,13 @@ class App < Sinatra::Application
   end
 
   post "/login" do
-    current_user = @database_connection.sql("SELECT * FROM users WHERE username='#{params[:username]}' AND password='#{params[:password]}';").first
-    puts "user is #{current_user["username"]}"
-    session[:user_id] = current_user["id"]
-    # p "the session id is #{session[:user_id]}"
-    flash[:not_logged_in] = true
+    current_user = @users_table.find_by(params[:username], params[:password])
+    if current_user == nil
+      flash[:notice] = "Username and password not found!"
+    else
+      session[:user_id] = current_user["id"]
+      flash[:not_logged_in] = true
+    end
     redirect "/"
   end
 
@@ -87,7 +89,7 @@ class App < Sinatra::Application
 
   get '/delete_user/:index' do
     id = params[:index].to_i
-    @database_connection.sql("DELETE FROM users where id = #{id}")
+    @users_table.delete(id)
     redirect back
   end
 

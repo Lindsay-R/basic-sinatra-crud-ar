@@ -3,8 +3,8 @@
 <!--if not logged in-->
 <% if session[:user_id] %>
   <!--<a href="/logout"><button action="/logout" type="button" formmethod="post">Logout</button></a>-->
-  <% user_array = @database_connection.sql("SELECT username FROM users WHERE id = #{session[:user_id]}") %>
-  <% user = user_array.pop["username"] %>
+
+  <% user = @users_table.find(session[:user_id])["username"] %>
 
   <h1 class="greeting">Welcome, <%= user %></h1>
   <h2 class="center_text">Users</h2>
@@ -15,34 +15,12 @@
     <button type="submit">Submit</button>
   </form>
 
-
-
-
-  <% if @suffix != nil %>
-
-  <table>
-    <tr>
-      <th>Username</th>
-      <th>Actions</th>
-    </tr>
-    <% @database_connection.sql(@other_users + @suffix).each do |user| %>
-      <% if user["id"] != session[:user_id] %>
-        <tr>
-          <td><a href="<%= user["id"] %>"> <%= user["username"] %></a></td>
-          <td><a href="/delete_user/<%= user["id"]%>"> Delete</a></td>
-        </tr>
-      <% end %>
-    <% end %>
-  </table>
-
-  <% else %>
-
     <table>
         <tr>
           <th>Username</th>
           <th>Actions</th>
         </tr>
-      <% @database_connection.sql(@other_users).each do |user| %>
+      <% @users_table.select_all.each do |user| %>
         <% if user["id"] != session[:user_id] %>
           <tr>
             <td><a href="<%= user["id"] %>"><%= user["username"] %></a></td>
@@ -52,8 +30,6 @@
       <% end %>
     </table>
 
-  <% end %>
-
 
   <h2 class="center_text">My Fish</h2>
   <table>
@@ -61,7 +37,7 @@
       <th>Name</th>
       <th>Actions</th>
     </tr>
-    <% @database_connection.sql("select * from fish").each do |fish| %>
+    <% @fish_table.select_all.each do |fish| %>
       <% if fish["user_id"] == session[:user_id] %>
     <tr>
       <td><%= fish['fish_name'] %></td>

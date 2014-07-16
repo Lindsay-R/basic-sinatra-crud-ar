@@ -1,0 +1,26 @@
+ <% if @suffix != nil %>
+
+  <table>
+    <tr>
+      <th>Username</th>
+      <th>Actions</th>
+    </tr>
+    <% @database_connection.sql(@other_users + @suffix).each do |user| %>
+      <% if user["id"] != session[:user_id] %>
+        <tr>
+          <td><a href="<%= user["id"] %>"> <%= user["username"] %></a></td>
+          <td><a href="/delete_user/<%= user["id"]%>"> Delete</a></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </table>
+
+  <% else %>
+
+
+      # if params[:order_names] == "asc"
+      #   @suffix = " ORDER BY username ASC"
+      # elsif params[:order_names] == "desc"
+      #   @suffix = " ORDER BY username DESC"
+      # end
+      # @other_users = "SELECT username,id FROM users"
