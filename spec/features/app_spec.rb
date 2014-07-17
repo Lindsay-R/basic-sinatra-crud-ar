@@ -4,8 +4,8 @@ feature "Homepage" do
   scenario "check homepage" do
     visit "/"
     expect(page).to have_button("Register")
-    expect(page).to have_content("username")
-    expect(page).to have_content("password")
+    expect(page).to have_content("Username:")
+    expect(page).to have_content("Password:")
     expect(page).to have_button("Login")
   end
 end
@@ -18,34 +18,33 @@ feature "Register page" do
   end
   scenario "empty username" do
     visit "/registration"
-    fill_in 'username', with: ''
-    fill_in 'password', with: 'Ilovekittens'
+    fill_in 'Username:', with: ''
+    fill_in 'Password:', with: 'Ilovekittens'
     click_button "Register"
-    expect(page).to have_content("Please fill in username")
+    expect(page).to have_content("Username is required")
   end
   scenario "empty password" do
     visit "/registration"
-    fill_in 'username', with: 'Lindsay'
-    fill_in 'password', with: ''
+    fill_in 'Username:', with: 'Lindsay'
+    fill_in 'Password:', with: ''
     click_button "Register"
-    expect(page).to have_content("Please fill in password")
+    expect(page).to have_content("Password is required")
   end
   scenario "empty all" do
     visit "/registration"
-    fill_in 'username', with: ''
-    fill_in 'password', with: ''
+    fill_in 'Username:', with: ''
+    fill_in 'Password:', with: ''
     click_button "Register"
-    expect(page).to have_content("Please fill in username and password")
+    expect(page).to have_content("Username and password are required")
   end
   scenario "empty all" do
     visit "/registration"
-    rand = rand(1000)
-    fill_in 'username', with:  "asd#{rand}"
-    fill_in 'password', with: 'qwe'
+    fill_in 'Username:', with:  "mandy"
+    fill_in 'Password:', with: 'qwe'
     click_button "Register"
     click_button "Register"
-    fill_in 'username', with: "asd#{rand}"
-    fill_in 'password', with: 'qwe'
+    fill_in 'Username:', with: "mandy"
+    fill_in 'Password:', with: 'qwe'
     click_button "Register"
     expect(page).to have_content("Username is already in use, please choose another.")
   end
@@ -54,8 +53,8 @@ end
 feature "Fill in form and see greeting" do
   scenario "visit registration page" do
     visit "/registration"
-    fill_in 'username', with: 'Lindsay' + rand(1000).to_s
-    fill_in 'password', with: 'Ilovekittens'
+    fill_in 'Username:', with: 'Lindsay'
+    fill_in 'Password:', with: 'Ilovekittens'
     click_button "Register"
     expect(page).to have_content("Thank you for registering")
     end
@@ -65,11 +64,11 @@ feature "Login and out" do
 
     visit "/"
     click_button "Register"
-    fill_in 'username', with:  'Alex'
-    fill_in 'password', with: 'Ilovepuppies'
+    fill_in 'Username:', with:  'Alex'
+    fill_in 'Password:', with: 'Ilovepuppies'
     click_button "Register"
-    fill_in 'username', with:  'Alex'
-    fill_in 'password', with: 'Ilovepuppies'
+    fill_in 'Username:', with:  'Alex'
+    fill_in 'Password:', with: 'Ilovepuppies'
     click_button "Login"
     expect(page).to have_content("Welcome, Alex")
     expect(page).to have_button("Logout")
@@ -83,54 +82,86 @@ feature "Login and out" do
 end
 feature "Display users" do
   scenario "on user page display other current users" do
-    skip
   visit "/"
   click_button "Register"
-  fill_in 'username', with:  'Phil'
-  fill_in 'password', with: 'Iloveponies'
-  click_button "Register"
-  visit "/"
-  click_button "Register"
-  fill_in 'username', with:  'Steve'
-  fill_in 'password', with: 'Ilovefish'
+  fill_in 'Username:', with:  'Phil'
+  fill_in 'Password:', with: 'Iloveponies'
   click_button "Register"
   visit "/"
   click_button "Register"
-  fill_in 'username', with:  'John'
-  fill_in 'password', with: 'Ilovebirds'
+  fill_in 'Username:', with:  'Steve'
+  fill_in 'Password:', with: 'Ilovefish'
   click_button "Register"
-  fill_in 'username', with: 'Phil'
-  fill_in 'password', with: 'Iloveponies'
+  visit "/"
+  click_button "Register"
+  fill_in 'Username:', with:  'John'
+  fill_in 'Password:', with: 'Ilovebirds'
+  click_button "Register"
+  fill_in 'Username:', with: 'Phil'
+  fill_in 'Password:', with: 'Iloveponies'
   click_button "Login"
   expect(page).to have_content("John")
   expect(page).to have_content("Steve")
   visit "/"
-  expect(page).to have_no_content("Phil")
-  # click_button "Sort"
-  # expect(page).to have_content("John Steve")
+  # expect(page).to have_no_content("Phil")
+  choose('Ascending')
+  click_button "Submit"
+  expect(page).to have_selector('table td:nth-child(1)', text: 'John')
   end
   feature "Delete users" do
     scenario "as a logged in user i can delete users from my page" do
     visit "/"
     click_button "Register"
-    fill_in 'username', with:  'Phil'
-    fill_in 'password', with: 'Iloveponies'
+    fill_in 'Username:', with: 'Phil'
+    fill_in 'Password:', with: 'Iloveponies'
     click_button "Register"
-    visit "/"
     click_button "Register"
-    fill_in 'username', with:  'Steve'
-    fill_in 'password', with: 'Ilovefish'
+    fill_in 'Username:', with:  'Steve'
+    fill_in 'Password:', with: 'Ilovefish'
     click_button "Register"
-    visit "/"
-    fill_in 'username', with: 'Phil'
-    fill_in 'password', with: 'Iloveponies'
+    fill_in 'Username:', with: 'Phil'
+    fill_in 'Password:', with: 'Iloveponies'
     click_button "Login"
     expect(page).to have_content("Steve")
-    # click_link "Delete"
-    # expect(page).to have_no_content("Steve")
+    click_link "Delete Steve"
+    expect(page).to have_no_content("Steve")
     end
   end
 
+  feature "fish activities" do
+    scenario "Create a fish" do
+      visit '/'
+      click_button "Register"
+      fill_in 'Username:', with:  'Steve'
+      fill_in 'Password:', with: 'Ilovefish'
+      click_button "Register"
+      fill_in 'Username:', with: 'Steve'
+      fill_in 'Password:', with: 'Ilovefish'
+      click_button "Login"
+      click_button "Create Fish"
+      fill_in "Name:", with: "Shark"
+      fill_in "Wiki:", with: "www.greatsharksite.com"
+      click_button "Create"
+      click_button "Logout"
+      click_button "Register"
+      fill_in 'Username:', with: 'Phil'
+      fill_in 'Password:', with: 'Iloveponies'
+      click_button "Register"
+      fill_in 'Username:', with: 'Phil'
+      fill_in 'Password:', with: 'Iloveponies'
+      click_button "Login"
+      click_button "Create Fish"
+      fill_in "Name:", with: "Goldfish"
+      fill_in "Wiki:", with: "www.greatfishsite.com"
+      click_button "Create"
+      expect(page).to have_content("Goldfish")
+      expect(page).to have_no_content("Shark")
+      click_link "Steve"
+      expect(page).to have_content("Shark")
+    end
+
+
+  end
 
 
 end

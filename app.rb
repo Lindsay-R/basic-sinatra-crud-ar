@@ -34,8 +34,8 @@ class App < Sinatra::Application
   end
 
   get '/friend/:index' do
-    @friend_id = params[:index].to_i
-    erb :friend_fish
+    @friend_id = params[:index]
+    erb :friend
   end
 
   get "/registration" do
