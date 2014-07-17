@@ -1,10 +1,12 @@
-
 <h1>Create A New Fish</h1>
 <form action="/fish" method="post">
   <fieldset>
     <legend>Information:</legend>
-    Name: <input class="short_input" name="name" value="Enter fish name"><br><br>
-    Wiki: <input class="short_input" name="wiki" value="Enter fish's wiki page'"><br>
+    <span class="error_flash"><%= flash[:fish_error] %></span><br><br>
+    <label for="name">Name:</label>
+    <input class="short_input" name="name" id="name"><br><br>
+    <label for="wiki">Wiki:</label>
+    <input class="short_input" name="wiki" id="wiki"><br>
   </fieldset>
   <button id="log_button" type="submit">Create</button>
 </form>

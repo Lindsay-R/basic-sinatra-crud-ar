@@ -10,8 +10,9 @@
   <h2 class="center_text">Users</h2>
 
   <form action="/" method="get">
-    <input type="radio" name="order_names" value="asc">Ascending<br>
-    <input type="radio" name="order_names" value="desc">Descending<br>
+
+    <input type="radio" name="order_names" value="asc" id="asc"><label for="asc">Ascending</label><br>
+    <input type="radio" name="order_names" value="desc" id="desc"><label for="desc">Descending</label><br>
     <button type="submit">Submit</button>
   </form>
 
@@ -20,11 +21,11 @@
           <th>Username</th>
           <th>Actions</th>
         </tr>
-      <% @users_table.select_all.each do |user| %>
+      <% @user_order.each do |user| %>
         <% if user["id"] != session[:user_id] %>
           <tr>
-            <td><a href="<%= user["id"] %>"><%= user["username"] %></a></td>
-            <td><a href="/delete_user/<%= user["id"]%>"> Delete</a></td>
+            <td><a href="/friend/<%= user["id"] %>"><%= user["username"]%></a></td>
+            <td><a href="/delete_user/<%= user["id"]%>">Delete</a></td>
           </tr>
         <% end %>
       <% end %>
@@ -53,11 +54,14 @@
   </form>
 
   <form action="/logout" method="post">
-    <button id ="log_button" type="submit">Logout</button>
+    <button id ="log_button">Logout</button>
   </form>
 
   <!--<form action="/login" method="post"><button type="submit">Sort</button></form>-->
 <% else %>
+
+  <span style="color: greenyellow"><%= flash[:notice] %></span>
+  <span class="error_flash"><%= flash[:error_flash] %></span>
   <form method="get" action="/registration">
     <button id="register">Register</button>
   </form>
@@ -65,9 +69,11 @@
 
 
   <form action="/login" method="post">
-    username <input class="input_field" type="text" name="username">
+    <label for="username">Username:</label>
+    <input class="input_field" type="text" name="username" id="username">
     <br>
-    password <input class="input_field" type="password" name="password">
+    <label for="password">Password:</label>
+    <input class="input_field" type="password" name="password" id="password">
     <button id ="log_button"  type="submit">Login</button>
   </form>
 

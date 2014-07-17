@@ -1,0 +1,15 @@
+<h2 class="center_text">Friend Fish</h2>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Actions</th>
+  </tr>
+  <% @fish_table.select_all.each do |fish| %>
+    <% if fish["user_id"] == @friend_id %>
+      <tr>
+        <td><%= fish['fish_name'] %></td>
+        <td><a href="<%= fish['fish_wiki'] %>">Wikipedia</a></td>
+      </tr>
+    <% end %>
+  <% end %>
+</table>

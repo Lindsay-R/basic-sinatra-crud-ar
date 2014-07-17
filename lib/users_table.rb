@@ -49,4 +49,15 @@ class UsersTable
     select_sql = "select * from users"
     @database_connection.sql(select_sql)
   end
+
+  def select_all_asc
+    select_sql = "select * from users order by username asc"
+    @database_connection.sql(select_sql)
+  end
+
+  def select_all_desc
+    select_sql = "select * from users order by username desc"
+    @database_connection.sql(select_sql)
+  end
+
 end

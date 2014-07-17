@@ -20,10 +20,22 @@ class App < Sinatra::Application
   end
 
   get "/" do
-    if session[:user_id]
-      puts "We still have a session id #{session[:id]}"
+    # if session[:user_id]
+    #   puts "We still have a session id #{session[:id]}"
+    # end
+    if params[:order_names] == 'asc'
+      @user_order = @users_table.select_all_asc
+    elsif params[:order_names] == 'desc'
+      @user_order = @users_table.select_all_desc
+    else
+      @user_order = @users_table.select_all
     end
     erb :root
+  end
+
+  get '/friend/:index' do
+    @friend_id = params[:index].to_i
+    erb :friend_fish
   end
 
   get "/registration" do
@@ -32,17 +44,17 @@ class App < Sinatra::Application
 
   post "/registration" do
     if params[:username] == '' && params[:password] == ''
-      flash[:notice] = "Please fill in username and password"
+      flash[:error_flash] = "Username and password are required"
       redirect "/registration"
     elsif params[:password] == ''
-      flash[:notice] = "Please fill in password"
+      flash[:error_flash] = "Password is required"
       redirect "/registration"
     elsif params[:username] == ''
-      flash[:notice] = "Please fill in username"
+      flash[:error_flash] = "Username is required"
       redirect "/registration"
     else
       if @users_table.find_id_by_name(params[:username]) != nil
-        flash[:notice] = "Username is already in use, please choose another."
+        flash[:error_flash] = "Username is already in use, please choose another."
         redirect "/registration"
       end
       flash[:notice] = "Thank you for registering"
@@ -55,7 +67,7 @@ class App < Sinatra::Application
     name = params[:name]
     wiki = params[:wiki]
     if name == ""
-      flash[:notice] = "Fish must have a name!"
+      flash[:fish_error] = "Fish must have a name!"
       redirect back
     else
       @fish_table.create(name, wiki, session[:user_id])
@@ -63,14 +75,17 @@ class App < Sinatra::Application
     end
   end
 
-  get "/friends_fish" do
-
-  end
-
   post "/login" do
     current_user = @users_table.find_by(params[:username], params[:password])
-    if current_user == nil
-      flash[:notice] = "Username and password not found!"
+    if params[:username] == '' && params[:password] == ''
+      flash[:error_flash] = "Username and password are required"
+      redirect back
+    elsif params[:password] == ''
+      flash[:error_flash] = "Password is required"
+      redirect back
+    elsif params[:username] == ''
+      flash[:error_flash] = "Username is required"
+      redirect back
     else
       session[:user_id] = current_user["id"]
       flash[:not_logged_in] = true

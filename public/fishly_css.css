@@ -62,8 +62,9 @@ tr:nth-child(odd) {
     height: 40px;
     font-size: 1em;
     float: right;
-    
 }
 
-
+.error_flash {
+    color: red;
+}
 
